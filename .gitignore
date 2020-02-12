@@ -1,0 +1,34 @@
+# Makefiles
+Makefile
+*.mk
+*.inc
+*.link
+*.native
+
+# Compiled Object files
+*.o
+*.obj
+*.c
+
+# Binary files
+*.bin
+*.elf
+*.exe
+*.tlog
+*.ipch
+*.suo
+*.pdb
+*.idb
+*.ilk
+
+*.ld
+*.map
+
+*.visualcode/
+*.vscode/
+
+build/
+
+# Bashscript
+run
+makeMakefile
