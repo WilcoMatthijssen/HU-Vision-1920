@@ -20,9 +20,16 @@ Makefile
 *.pdb
 *.idb
 *.ilk
-
+*.db
+*.log
+*.ide
+*.ipdb
+*.io
 *.ld
 *.map
+*.lock
+*.iobj
+
 
 *.visualcode/
 *.vscode/
