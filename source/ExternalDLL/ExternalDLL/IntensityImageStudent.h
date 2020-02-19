@@ -8,8 +8,8 @@
 #include "IntensityImage.h"
 #include <vector>
 class IntensityImageStudent : public IntensityImage {
-//private:
-//	std::vector<Intensity> pixels;
+private:
+	std::vector<Intensity> pixels;
 public:
 	IntensityImageStudent();
 	IntensityImageStudent(const IntensityImageStudent &other);

@@ -8,8 +8,8 @@
 #include "RGBImage.h"
 #include <vector>
 class RGBImageStudent : public RGBImage {
-//private:
-//	std::vector<RGB> pixels;
+private:
+	std::vector<RGB> pixels;
 public:
 
 	RGBImageStudent();
