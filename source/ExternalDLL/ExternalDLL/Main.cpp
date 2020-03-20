@@ -3,40 +3,68 @@
 * Unauthorized copying of this file, via any medium is strictly prohibited
 * Proprietary and confidential
 */
-
+#include <numeric>
 #include <iostream> //std::cout
 #include "ImageIO.h" //Image load and save functionality
 #include "HereBeDragons.h"
 #include "ImageFactory.h"
 #include "DLLExecution.h"
-
+#include <chrono>
+#include <fstream>
 void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
+class Timer {
+public:
+	Timer() {
+		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+	}
+	~Timer() {
+		Stop();
+	}
+	long long Stop() {
+		auto endTimepoint = std::chrono::high_resolution_clock::now();
+		auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();
+		auto end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimepoint).time_since_epoch().count();
+		auto duration = end - start;
+		return duration;
+	}
+private:
+	std::chrono::time_point< std::chrono::high_resolution_clock > m_StartTimepoint;
+};
 
 int main(int argc, char * argv[]) {
 
-	ImageFactory::setImplementation(ImageFactory::DEFAULT);
-	//ImageFactory::setImplementation(ImageFactory::STUDENT);
-
-
-	ImageIO::debugFolder = "D:\\Users\\Rolf\\Downloads\\FaceMinMin";
+	//ImageFactory::setImplementation(ImageFactory::DEFAULT);
+	ImageFactory::setImplementation(ImageFactory::STUDENT);
+	ImageIO::debugFolder = "C:\\Users\\Wilco\\source\\repos\\VISN-HU\\testsets\\Set A\\TestSet Images";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
-
-
-
-	RGBImage * input = ImageFactory::newRGBImage();
-	if (!ImageIO::loadImage("D:\\Users\\Rolf\\Downloads\\TestA5.jpg", *input)) {
+	RGBImage * input = ImageFactory::newRGBImage();//TestSet Images\\ 
+	if (!ImageIO::loadImage("C:\\Users\\Wilco\\source\\repos\\VISN-HU\\testsets\\Set B\\female-6.jpg", *input)) {
 		std::cout << "Image could not be loaded!" << std::endl;
 		system("pause");
 		return 0;
 	}
 
 
-	ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
+	//ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
 
 	DLLExecution * executor = new DLLExecution(input);
+	/*std::vector<long long> results;
+	results.reserve(1000);
+	for (size_t i = 0; i < 1000; ++i) {
+		Timer T = Timer();
+		executor->executePreProcessingStep1(false);
+		results.push_back(T.Stop());
+	}
 
+	std::ofstream myfile;
+	myfile.open("results.csv");
+	for (const auto& result : results) {
+		myfile << result << '\n';
+	}
+	myfile.close();
+     */
 
 	if (executeSteps(executor)) {
 		std::cout << "Face recognition successful!" << std::endl;
@@ -63,11 +91,11 @@ int main(int argc, char * argv[]) {
 bool executeSteps(DLLExecution * executor) {
 
 	//Execute the four Pre-processing steps
-	if (!executor->executePreProcessingStep1(false)) {
+	if (!executor->executePreProcessingStep1(true)) {
 		std::cout << "Pre-processing step 1 failed!" << std::endl;
 		return false;
 	}
-
+	ImageFactory::setImplementation(ImageFactory::DEFAULT);
 	if (!executor->executePreProcessingStep2(false)) {
 		std::cout << "Pre-processing step 2 failed!" << std::endl;
 		return false;

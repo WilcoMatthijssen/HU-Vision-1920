@@ -9,20 +9,22 @@
 #include <vector>
 class RGBImageStudent : public RGBImage {
 private:
-	std::vector<RGB> pixels;
+	
 public:
-
+	std::vector<RGB> pixels;
 	RGBImageStudent();
-	RGBImageStudent(const RGBImageStudent &other);
+	RGBImageStudent(const RGBImageStudent& other);
 	RGBImageStudent(const int width, const int height);
 	~RGBImageStudent();
 
-	void set(const int width, const int height);
-	void set(const RGBImageStudent &other);
+	const std::vector<RGB>& get() const;
 
-	void setPixel(int x, int y, RGB pixel);
-	void setPixel(int i, RGB pixel);
+	void set(const int width, const int height) override;
+	void set(const RGBImageStudent& other);
 
-	RGB getPixel(int x, int y) const;
-	RGB getPixel(int i) const;
+	void setPixel(int x, int y, RGB pixel) override;
+	void setPixel(int i, RGB pixel) override;
+
+	RGB getPixel(int x, int y) const override;
+	RGB getPixel(int i) const override;
 };
