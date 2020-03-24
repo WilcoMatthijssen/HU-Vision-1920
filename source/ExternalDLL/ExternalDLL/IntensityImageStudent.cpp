@@ -7,16 +7,11 @@ IntensityImageStudent::IntensityImageStudent(const IntensityImageStudent &other)
 	:	IntensityImage(other.getWidth(), other.getHeight()) {
 	pixels = other.pixels;
 }
-const std::vector<Intensity> &IntensityImageStudent::get() const{
-	return pixels;
-}
 
 IntensityImageStudent::IntensityImageStudent(const int width, const int height) : IntensityImage(width, height) {
 	pixels.resize(getWidth() * getHeight());
 }
 
-IntensityImageStudent::~IntensityImageStudent() {
-}
 
 void IntensityImageStudent::set(const int width, const int height) {
 	IntensityImage::set(width, height);

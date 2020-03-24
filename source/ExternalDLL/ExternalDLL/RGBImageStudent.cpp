@@ -1,5 +1,6 @@
 #include "RGBImageStudent.h"
 
+
 RGBImageStudent::RGBImageStudent() : RGBImage() {
 }
 
@@ -7,16 +8,11 @@ RGBImageStudent::RGBImageStudent(const RGBImageStudent& other)
 	: RGBImage(other.getWidth(), other.getHeight()) {
 	pixels = other.pixels;
 }
-const std::vector<RGB>& RGBImageStudent::get() const {
-	return pixels;
-}
 
 RGBImageStudent::RGBImageStudent(const int width, const int height) : RGBImage(width, height) {
 	pixels.resize(getWidth() * getHeight());
 }
 
-RGBImageStudent::~RGBImageStudent() {
-}
 
 void RGBImageStudent::set(const int width, const int height) {
 	RGBImage::set(width, height);
