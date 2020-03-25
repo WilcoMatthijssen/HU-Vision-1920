@@ -11,8 +11,10 @@
 #include "DLLExecution.h"
 #include <chrono>
 #include <fstream>
+
 void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
+
 class Timer {
 public:
 	Timer() {
@@ -36,26 +38,26 @@ int main(int argc, char * argv[]) {
 
 	//ImageFactory::setImplementation(ImageFactory::DEFAULT);
 	ImageFactory::setImplementation(ImageFactory::STUDENT);
-	ImageIO::debugFolder = "C:\\Users\\Wilco\\source\\repos\\VISN-HU\\testsets\\Set A\\TestSet Images";
+	ImageIO::debugFolder = "C:\\Users\\daanz\\Documents\\GitHub\\VISN-HU\\testsets\\Set A\\TestSet Images";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
 	RGBImage * input = ImageFactory::newRGBImage();//TestSet Images\\ 
-	if (!ImageIO::loadImage("C:\\Users\\Wilco\\source\\repos\\VISN-HU\\testsets\\Set B\\female-6.jpg", *input)) {
+	if (!ImageIO::loadImage("C:\\Users\\daanz\\Documents\\GitHub\\VISN-HU\\testsets\\Set B\\child-1.png", *input)) {
 		std::cout << "Image could not be loaded!" << std::endl;
 		system("pause");
 		return 0;
 	}
 
 
-	//ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
+	ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
 
 	DLLExecution * executor = new DLLExecution(input);
-	/*std::vector<long long> results;
+	std::vector<long long> results;
 	results.reserve(1000);
 	for (size_t i = 0; i < 1000; ++i) {
-		Timer T = Timer();
+		Timer t = Timer();
 		executor->executePreProcessingStep1(false);
-		results.push_back(T.Stop());
+		results.push_back(t.Stop());
 	}
 
 	std::ofstream myfile;
@@ -64,7 +66,7 @@ int main(int argc, char * argv[]) {
 		myfile << result << '\n';
 	}
 	myfile.close();
-     */
+     
 
 	if (executeSteps(executor)) {
 		std::cout << "Face recognition successful!" << std::endl;
@@ -95,6 +97,7 @@ bool executeSteps(DLLExecution * executor) {
 		std::cout << "Pre-processing step 1 failed!" << std::endl;
 		return false;
 	}
+
 	ImageFactory::setImplementation(ImageFactory::DEFAULT);
 	if (!executor->executePreProcessingStep2(false)) {
 		std::cout << "Pre-processing step 2 failed!" << std::endl;
@@ -102,6 +105,7 @@ bool executeSteps(DLLExecution * executor) {
 	}
 	ImageIO::saveIntensityImage(*executor->resultPreProcessingStep2, ImageIO::getDebugFileName("Pre-processing-2.png"));
 
+	ImageFactory::setImplementation(ImageFactory::DEFAULT);
 	if (!executor->executePreProcessingStep3(false)) {
 		std::cout << "Pre-processing step 3 failed!" << std::endl;
 		return false;
