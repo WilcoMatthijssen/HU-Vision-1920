@@ -11,6 +11,7 @@
 #include "DLLExecution.h"
 #include <chrono>
 #include <fstream>
+#include <algorithm>
 
 void drawFeatureDebugImage(IntensityImage &image, FeatureMap &features);
 bool executeSteps(DLLExecution * executor);
@@ -37,46 +38,111 @@ private:
 int main(int argc, char * argv[]) {
 
 	//ImageFactory::setImplementation(ImageFactory::DEFAULT);
-	ImageFactory::setImplementation(ImageFactory::STUDENT);
+	ImageFactory::setImplementation(ImageFactory::DEFAULT);
 	ImageIO::debugFolder = "C:\\Users\\daanz\\Documents\\GitHub\\VISN-HU\\testsets\\Set A\\TestSet Images";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
-	RGBImage * input = ImageFactory::newRGBImage();//TestSet Images\\ 
-	if (!ImageIO::loadImage("C:\\Users\\daanz\\Documents\\GitHub\\VISN-HU\\testsets\\Set B\\child-1.png", *input)) {
-		std::cout << "Image could not be loaded!" << std::endl;
-		system("pause");
-		return 0;
-	}
+	// ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
+	std::string stdFilePath = "C:\\Users\\daanz\\Documents\\GitHub\\VISN-HU\\testsets\\Set B\\";
+	std::vector< std::vector<long long>> totalResults;
+	std::vector<std::string> Filenames{
+		"blue.png",
+		"child-1.png",
+		"female-1.png",
+		"female-2.png",
+		"female-3.png",
+		"female-4.jpg",
+		"female-5.jpg",
+		"male-1.png",
+		"male-2.png",
+		"male-3.png",
+		"male-4.jpg",
+		"male-5.jpg",
+		"male-6.jpg",
+		"male-7.jpg",
+		"rock-1.jpg",
+		"rock-2.jpg",
+		"sky-1.jpg",
+		"sky-2.jpg",
+		"tree-1.png",
+		"tree-2.jpg"
+	};
 
 
-	ImageIO::saveRGBImage(*input, ImageIO::getDebugFileName("debug.png"));
 
-	DLLExecution * executor = new DLLExecution(input);
-	std::vector<long long> results;
-	results.reserve(1000);
-	for (size_t i = 0; i < 1000; ++i) {
-		Timer t = Timer();
-		executor->executePreProcessingStep1(false);
-		results.push_back(t.Stop());
+	size_t amountLoops = 1000;
+	bool useStudent = false;
+
+	std::cout << "Testing " << Filenames.size() << " pictures " << amountLoops
+		<< " times.\n\n";
+	RGBImage* input = ImageFactory::newRGBImage();//TestSet Images\\ 
+	for (const auto& name : Filenames) {
+		std::cout << "Testing: " << stdFilePath << name << std::endl;
+
+		if (!ImageIO::loadImage(stdFilePath + name, *input)) {
+			std::cout << "Image could not be loaded!" << std::endl;
+			system("pause");
+			return 0;
+		}
+
+		DLLExecution* executor = new DLLExecution(input);
+		std::vector<long long> results;
+		results.reserve(amountLoops);
+		for (size_t i = 0; i < amountLoops; ++i) {
+			Timer t = Timer();
+			executor->executePreProcessingStep1(useStudent);
+			results.push_back(t.Stop());
+		}
+		totalResults.push_back(results);
 	}
 
 	std::ofstream myfile;
+
 	myfile.open("results.csv");
-	for (const auto& result : results) {
-		myfile << result << '\n';
+	
+	// Filenames
+	for (const auto& name : Filenames) {
+		myfile << '"' << name << '"' << ";";
 	}
-	myfile.close();
-     
+	myfile << "\n";
 
-	if (executeSteps(executor)) {
-		std::cout << "Face recognition successful!" << std::endl;
-		std::cout << "Facial parameters: " << std::endl;
-		for (int i = 0; i < 16; i++) {
-			std::cout << (i+1) << ": " << executor->facialParameters[i] << std::endl;
+	// Results
+	for (size_t i = 0; i < amountLoops; i++) {
+		for (size_t j = 0; j < totalResults.size(); j++) {
+			myfile << '"' << totalResults[j][i] << '"' << ";";
 		}
+		myfile << "\n";
 	}
 
-	delete executor;
+	// Data
+	for (size_t i = 0; i < Filenames.size(); i++) {
+		myfile << ";";
+	}
+	myfile << "\n";
+
+	for (const auto& name : Filenames) {
+		myfile << '"' << name << '"' << ";";
+	}
+	myfile << "\n";
+
+	for (const auto& results : totalResults) {
+		myfile << *std::max_element(results.begin(), results.end()) << ";";
+	}
+	myfile << "Max\n";
+
+	for (const auto& results : totalResults) {
+		myfile << std::accumulate(results.begin(), results.end(), 0.0) / results.size() << ";";
+	}
+	myfile << "Gemiddelde\n";
+
+	for (const auto& results : totalResults) {
+		myfile << *std::min_element(results.begin(), results.end()) << ";";
+	}
+	myfile << "Min\n";
+
+	myfile.close();
+
+
 	system("pause");
 	return 1;
 }
